@@ -1,0 +1,10 @@
+86afba369fb24abacd1efe96669aca7c *DESCRIPTION
+1f180ad956d0acdb46446a7b2f152936 *NAMESPACE
+1e3aade32d6740018a0763d8487bedb6 *R/bma.R
+4c3e4821588dec2056d1d8b450f2ad9a *data/weight_behavior.rda
+6f0fdd3d79147e3b75be069eaf5c893c *man/BayesianMediationA-package.Rd
+38606524585fd45765b9629d5576be43 *man/bma.bx.cy.Rd
+f2c367b36eaa42702d0d7614de92d557 *man/data_org.Rd
+caaf7901ff9099504288d769b3b9fe87 *man/print.summary.bma.Rd
+39e8edd4a8bc3bc26ca92127b21e537f *man/summary.bma.bx.cy.Rd
+5eb4f4ef1d88c379c25956f9895c0911 *man/weight_behavior.Rd

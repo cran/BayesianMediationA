@@ -1,0 +1,8 @@
+exportPattern("^[^\\.]")
+import(R2jags,splines,car,gplots,survival,lattice)
+importFrom("grDevices", "rainbow")
+importFrom("graphics", "par")
+importFrom("stats", "D", "complete.cases", "pgamma", "quantile", "sd")
+importFrom("methods", "is")
+S3method(summary,bma.bx.cy)
+S3method(print,summary.bma)
