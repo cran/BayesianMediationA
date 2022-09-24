@@ -44,7 +44,7 @@ the transformation function expressions on m in explaining y. The first item lis
 the vector of differences in the mediators in calculating the partial difference in y for method 2. The vector is in the order of columns of m. By default, 0.001 for continuous variables and 1 for binary or categorical mediators.
 }
   \item{fpm}{
-the transformation-function-expression list on exposure variable(s) (pred) in explaining mediators (m). The first item is a matrix with two columns: the first column is the column numbers of the mediators in m, which should be explained by the transformed predictor(s). The second column indicates the column number of the exposure in pred that will be transformed to explain the mediator identified by the 1st column of the same row. By the order of the rows of the first item, each of the rest items of fpm lists the transformation functional expressions for the exposure (identified by column 2) in explaining each mediator (identified by column 1). The mediators not specified in the list will be explained by the original format of the exposures in pred. For example, fpm=list(matrix(c(1,2,1,1),2,2), "x^2",c("x","x^2")) means that pred[,1]^2 is used to explain m[,1], and both pred and pred[,1]^2 are used to explain m[,2].
+the transformation-function-expression list on exposure variable(s) (pred) in explaining mediators (m). The first item is a matrix with two columns: the first column is the column numbers of the mediators in m, which should be explained by the transformed predictor(s). The second column indicates the column number of the exposure in pred that will be transformed to explain the mediator identified by the 1st column of the same row. By the order of the rows of the first item, each of the rest items of fpm lists the transformation functional expressions for the exposure (identified by column 2) in explaining each mediator (identified by column 1). The mediators not specified in the list will be explained by the original format of the exposures in pred. For example, fpm=list(matrix(c(1,2,1,1),2,2), "x^2",c("x","x^2")) means that pred[,1]^2 is used to explain m[,1], and both pred[,1] and pred[,1]^2 are used to explain m[,2].
 }
   \item{mref}{
 the reference group of the mediators in the order of the columns of m.
@@ -53,7 +53,7 @@ the reference group of the mediators in the order of the columns of m.
 the covariates that are used to explain y in addition to pred, m and/or their transformations.
 }
   \item{mcov}{
-the covariates that are used to explain mediators in additon to pred and/or their tranformations.
+the covariates that are used to explain mediators in additon to pred and/or their transformations.
 }
   \item{mclist}{
 If mclist is NULL (by default), all covariates in mcov are used for all mediators in m. Otherwise, the first item of mclist lists all column numbers/names of mediators in m that are to be explained by covariates in mcov, the following items give the covariates in mcov for the mediators in the order of the first item. Use NA if no mcov is to be used.

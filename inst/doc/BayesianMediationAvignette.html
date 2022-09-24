@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Qingzhao Yu and Bin Li" />
+
+<meta name="date" content="2022-09-24" />
+
+<title>Examples for Bayesian Mediation Analysis</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Examples for Bayesian Mediation
+Analysis</h1>
+<h4 class="author">Qingzhao Yu and Bin Li</h4>
+<h4 class="date">2022-09-24</h4>
+
+
+
+<div id="package-installation" class="section level2">
+<h2>Package installation</h2>
+<p>The R package BayesianMediationA is created for linear or nonlinear
+mediation analysis with binary, continuous, or time-to-event outcomes
+under the Bayesian setting <span class="citation">Yu and Li (<a href="#ref-Yu2022" role="doc-biblioref">2022</a>)</span>. The vignette
+is composed of three parts. Part I focuses on the data sets used for
+examples, and part II on how to transform variables and prepare data for
+the mediation analysis. Part III walks through the function on Bayesian
+mediation analysis, and explains how to make inferences on mediation
+effects of interests.</p>
+<p>To use the R package BayesianMediationA, we first install the package
+in R (<code>install.packages(&quot;BayesianMediationA&quot;)</code>) and load
+it.</p>
+</div>
+<div id="the-data-set" class="section level2">
+<h2>The Data Set</h2>
+<p>We use the data set ``weight_behavior’ which is included in the
+package as examples for mediation analysis with binary or continuous
+outcomes <span class="citation">(<a href="#ref-Yu2017a" role="doc-biblioref">Yu and Li 2017</a>)</span>. In addition, a dataset
+is generated for the time-to-event outcome as the following:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#use a simulation</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>N<span class="ot">=</span><span class="dv">100</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>alpha<span class="ot">=</span><span class="fl">0.5</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">rnorm</span>(N,<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span><span class="fu">ifelse</span>(x<span class="sc">&gt;</span><span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>) <span class="co">#the binary exposure. If want to use a continuous exposure, remove this line</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>e1<span class="ot">=</span><span class="fu">rnorm</span>(N,<span class="dv">0</span>,<span class="dv">1</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>M<span class="ot">=</span>alpha<span class="sc">*</span>x<span class="sc">+</span>e1   <span class="co">#the mediator</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>lambda<span class="ot">=</span><span class="fl">0.01</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>rho<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>beta<span class="ot">=</span><span class="fl">1.2</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>c<span class="ot">=</span><span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>rateC<span class="ot">=</span><span class="fl">0.001</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>v<span class="ot">=</span><span class="fu">runif</span>(<span class="at">n=</span>N)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>Tlat <span class="ot">=</span>(<span class="sc">-</span> <span class="fu">log</span>(v) <span class="sc">/</span> (lambda <span class="sc">*</span> <span class="fu">exp</span>(c<span class="sc">*</span>x<span class="sc">+</span>M<span class="sc">*</span>beta)))<span class="sc">^</span>(<span class="dv">1</span> <span class="sc">/</span> rho) <span class="co">#the event time</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>C<span class="ot">=</span><span class="fu">rexp</span>(<span class="at">n=</span>N, <span class="at">rate=</span>rateC)  <span class="co">#the censoring time</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>time<span class="ot">=</span><span class="fu">pmin</span>(Tlat, C)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>status <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(Tlat <span class="sc">&lt;=</span> C)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>example2 <span class="ot">&lt;-</span><span class="fu">cbind</span>(x, M, time, status) <span class="co">#the dataset</span></span></code></pre></div>
+</div>
+<div id="data-transformation-and-organization" class="section level2">
+<h2>Data Transformation and Organization</h2>
+<p>The <span class="math inline">\(data_org\)</span> function is used to
+do the transformation before the mediation analysis. In the function,
+the exposure variable(s) (<span class="math inline">\(pred\)</span>) and
+the mediator(s) (<span class="math inline">\(m\)</span>) are required to
+input. The response variable (<span class="math inline">\(y\)</span>) is
+also required. If <span class="math inline">\(y\)</span> is binary or
+categorical, its reference level is input in the argument <span class="math inline">\(levely\)</span>. Similarly, the reference levels
+for the exposure variables and mediators are input in the argument <span class="math inline">\(predref\)</span> and <span class="math inline">\(mref\)</span> respectively.</p>
+<p>Other input data include <span class="math inline">\(cova\)</span>,
+the covaritates that are used to explain <span class="math inline">\(y\)</span>, and <span class="math inline">\(mcov\)</span>, the covariates for mediators.
+Covariates for <span class="math inline">\(y\)</span> are defined as
+predictors for <span class="math inline">\(y\)</span>, but not explained
+by the exposure variables <span class="math inline">\(pred\)</span>.
+Covariates for mediators are explanatory variables for mediators other
+than the exposure variable(s). Accompanying <span class="math inline">\(mcov\)</span>, we have <span class="math inline">\(mclist\)</span> to specify different covariates
+for different mediators. If <span class="math inline">\(mclist\)</span>
+is NULL (by default), all covariates in <span class="math inline">\(mcov\)</span> are used for all mediators in <span class="math inline">\(m\)</span>. Otherwise, the first item of <span class="math inline">\(mclist\)</span> lists all column numbers/names of
+mediators in <span class="math inline">\(m\)</span> that are to be
+explained by covariates in <span class="math inline">\(mcov\)</span>,
+the following items give the covariates in <span class="math inline">\(mcov\)</span> for the mediators in the order of
+the first item. <span class="math inline">\(NA\)</span> is used when no
+covariance is to be used for the corresponding mediator. For example,
+`mclist=list(c(2,4),NA,2:3)’ means that all mediators use all covariates
+in <span class="math inline">\(mcov\)</span>, except for the second
+mediator which use none of the covariates, and the fourth mediator,
+which uses only columns 2 to 3 of <span class="math inline">\(mcov\)</span> as its covariates.</p>
+<p>Variables can be transformed to denote potential nonlinear
+relationships. The transformation functions are expressed in arguments
+<span class="math inline">\(fpy\)</span>, <span class="math inline">\(fmy\)</span>, and <span class="math inline">\(fpm\)</span> separately. In the name of the
+arguments, the <code>p&#39; stands for the predictors,</code>m’ mediators,
+and `y’ the outcome. Namely, <span class="math inline">\(fpy\)</span>
+define the transformation functions of the predictors in explaining the
+outcome <span class="math inline">\(y\)</span>. The first item lists
+column numbers/variable names of the exposure variable in <span class="math inline">\(pred\)</span>, which needs to be transformed to
+explain <span class="math inline">\(y\)</span>. By the order of the
+first item, each of the rest items of <span class="math inline">\(fpy\)</span> lists the transformation functional
+expressions for the predictor. The exposures/predictors not specified in
+the list will not be transformed in any way in explaining y. For
+example, list(1,c(“x^2”,“log(x)”)) means that the first column of the
+pred will be transformed to square and log forms to explain <span class="math inline">\(y\)</span>. The <span class="math inline">\(fmy\)</span> is defined the same way for the
+transformed mediators to explain the outcome variable <span class="math inline">\(y\)</span>.</p>
+<p><span class="math inline">\(fpm\)</span> denotes the
+transformation-function-expression list on exposure variable(s) (<span class="math inline">\(pred\)</span>) in explaining mediators (<span class="math inline">\(m\)</span>). The definition of <span class="math inline">\(fpm\)</span> is similar to those of <span class="math inline">\(fpy\)</span> and <span class="math inline">\(fmy\)</span> except that the first item is a
+matrix with two columns: the first column is the column numbers of the
+mediators in <span class="math inline">\(m\)</span>, which should be
+explained by the transformed predictor(s) indicated by the second
+column. The second column indicates the column number of the exposure in
+<span class="math inline">\(pred\)</span> that will be transformed to
+explain the mediator identified by the 1st column of the same row. By
+the order of the rows of the first item, each of the rest items of fpm
+lists the transformation functional expressions for the exposure
+(identified by column 2) in explaining each mediator (identified by
+column 1). The mediators not specified in the list will be explained by
+the original format of the exposures in <span class="math inline">\(pred\)</span>. For example,
+`fpm=list(matrix(c(1,2,1,1),2,2), “x<sup>2”,c(”x”,”x</sup>2”))’ means
+that <span class="math inline">\(pred[,1]^2\)</span> is used to explain
+<span class="math inline">\(m[,1]\)</span>, and both <span class="math inline">\(pred[,1]\)</span> and <span class="math inline">\(pred[,1]^2\)</span> are used to explain <span class="math inline">\(m[,2]\)</span>.</p>
+<p>Finally, deltap and deltam define the change in predictors or
+mediators respectively in calculating the mediation effect.<span class="citation">Yu et al. (<a href="#ref-Yu2022_2" role="doc-biblioref">2022</a>)</span></p>
+<p>Users do not run the <span class="math inline">\(data\_org\)</span>
+function by itself. All arguments are included in the main Bayesian
+mediation analysis function <span class="math inline">\(bma.bx.cy\)</span>, which runs the <span class="math inline">\(data\_org\)</span> function in it to organize data
+for mediation analysis.</p>
+</div>
+<div id="the-function-bma.bx.cy-for-bayesian-mediation-analysis" class="section level2">
+<h2>The function <span class="math inline">\(bma.bx.cy\)</span> for
+Bayesian mediation analysis</h2>
+<p>The function <span class="math inline">\(bma.bx.cy\)</span> are used
+to perform the Bayesian mediation analysis. In the function, the <span class="math inline">\(data\_org\)</span> function is called first, which
+involves all arguments described above. In addition, prior distributions
+in the generalized linear models can be set up. By default, all
+coefficients in the Bayesian generalized linear models are independently
+normal distributed with mean <span class="math inline">\(0\)</span> and
+the precision term specified by <span class="math inline">\(speci\)</span>, default at <span class="math inline">\(10^{-6}\)</span>.</p>
+<p>The prior means and the variance-covariance matrix can be altered.
+<span class="math inline">\(mu\)</span> defines the prior mean for
+coefficients of mediators, <span class="math inline">\(muc\)</span> the
+prior mean vector (of length <span class="math inline">\(p2\)</span>)
+for coefficients of exposure(s), and <span class="math inline">\(mucv\)</span> the prior mean vector for
+coefficients of covariate(s)in the final model for <span class="math inline">\(y\)</span>. Related, <span class="math inline">\(Omega\)</span>, <span class="math inline">\(Omegac\)</span>, and <span class="math inline">\(Omegacv\)</span> defines the prior
+variance-covariance matrix for the coefficients of mediators,
+exposure(s), and covariates respectively.</p>
+<p>The prior distributions for coefficients of intercept/covariates, and
+exposures in explaining mediators are also assumed to be normal. The
+default prior mean and variance-covariance matrix are as above, and can
+be changed in <span class="math inline">\(mu0.1\)</span> and <span class="math inline">\(mu1.1\)</span> for means, and <span class="math inline">\(Omega0.1\)</span> and <span class="math inline">\(Omega1.1\)</span> for variance-covariance matrices
+respectively for the intercept/covariates and exposures. Separately, the
+mean and variance-covariance matrix of the prior distributions for
+coefficients for estimating the mediators can be specified by <span class="math inline">\(mu0\)</span>, <span class="math inline">\(mu1\)</span>, <span class="math inline">\(Omega0\)</span>, and <span class="math inline">\(Omega1\)</span> followed by <span class="math inline">\(.a\)</span>, <span class="math inline">\(.b\)</span>, and <span class="math inline">\(.c\)</span> for continuous, binary, or categorical
+mediators respectively.</p>
+<p>The function calls for `jags’ to perform the Bayesian analysis.
+Default models are fitted for mediators and outcomes. Namely, if the
+response variable is continuous, linear regression model is fitted,
+binary response is fitted with logistic regression, categorical response
+with multivariate logistic regression, and time-to-event response with
+cox hazard model.</p>
+<p>###Binary predictor and continuous outcome In the following example,
+the exposure variable is sex and the outcome is the bmi. The variables
+exercise (in hours), sports (in a sport team or not), and sweat (have
+sweating activity or not) are used to explain the sexual difference in
+bmi. The summary function returns inferences of the estimated effects
+with a graph of estimated effects with <span class="math inline">\(95\%\)</span> credible sets.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;weight_behavior&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#n.iter and n.burnin are set to be very small, should be adjusted</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#binary predictor</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>test.b.c<span class="ot">&lt;-</span> <span class="fu">bma.bx.cy</span>(<span class="at">pred=</span>weight_behavior[,<span class="dv">3</span>], <span class="at">m=</span>weight_behavior[,<span class="fu">c</span>(<span class="dv">14</span>,<span class="dv">12</span>,<span class="dv">13</span>)],</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y=</span>weight_behavior[,<span class="dv">1</span>],<span class="at">n.iter=</span><span class="dv">500</span>,<span class="at">n.burnin =</span> <span class="dv">100</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; module glm loaded</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Compiling model graph</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Resolving undeclared variables</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Allocating nodes</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Graph information:</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Observed stochastic nodes: 3936</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Unobserved stochastic nodes: 21</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Total graph size: 7677</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Initializing model</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(test.b.c)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  For Predictor 1 :</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Estimated Relative Effects for Method 3:</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             DE   sweat sports exercises</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mean    0.9046  0.0266 0.0918   -0.0230</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sd      0.0499  0.0270 0.0430    0.0163</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.025 0.7819 -0.0174 0.0279   -0.0595</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.25  0.8814  0.0111 0.0641   -0.0317</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.5   0.9097  0.0232 0.0874   -0.0224</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.75  0.9363  0.0406 0.1104   -0.0125</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.975 0.9806  0.0876 0.1868    0.0055</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The <span class="math inline">\(summary\)</span> function returns
+inference results for all four methods. By default, the relative effects
+are shown using method 3. To show the results of other methods, we can
+change by setting the argument <span class="math inline">\(method\)</span>. Method 4 is calculated for
+binary/categorical exposures only. If the user would like to see the
+effect estimations rather than the relative effects, one should set
+<span class="math inline">\(RE=F\)</span>.</p>
+<div id="categorical-predictor" class="section level3">
+<h3>Categorical predictor</h3>
+<p>The following example is given for a categorical exposure: race. In
+the data set, race takes six categories: empty (not reported), other,
+mixed, Caucasian, Indian, and African. ``CAUCASIAN’’ is used as the
+reference group, each other race group is compared with Caucasian in bmi
+and the relative effects from mediators are reported by the <span class="math inline">\(summary\)</span> function.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>test.b.c<span class="ot">&lt;-</span> <span class="fu">bma.bx.cy</span>(<span class="at">pred=</span>weight_behavior[,<span class="dv">3</span>], <span class="at">m=</span>weight_behavior[,<span class="fu">c</span>(<span class="dv">5</span><span class="sc">:</span><span class="dv">11</span>,<span class="dv">12</span><span class="sc">:</span><span class="dv">14</span>)],</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                       <span class="at">y=</span>weight_behavior[,<span class="dv">1</span>],<span class="at">cova=</span>weight_behavior[,<span class="dv">2</span>],<span class="at">mcov=</span>weight_behavior[,<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">5</span>)],</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">mclist =</span> <span class="fu">list</span>(<span class="dv">1</span>,<span class="dv">2</span>),<span class="at">n.iter=</span><span class="dv">500</span>,<span class="at">n.burnin =</span> <span class="dv">100</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Compiling model graph</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Resolving undeclared variables</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Allocating nodes</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Graph information:</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Observed stochastic nodes: 10206</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Unobserved stochastic nodes: 72</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Total graph size: 31416</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Initializing model</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(test.ca.c)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in summary(test.ca.c): object &#39;test.ca.c&#39; not found</span></span></code></pre></div>
+<p>The jags model fitted for the above model is as following:</p>
+<pre><code>#the jags models for the outcomes and mediators
+model {temp &lt;- 1:nmc
+  for(i in 1:N){
+    mu_y[i] &lt;- beta0 + inprod(c, x[i,]) + inprod(beta,M1[i,]) + inprod(eta,cova[i,])
+    y[i] ~ dnorm(mu_y[i],prec4) #the final model since y is continuous. The model is changed for
+                                #different format of the outcome, as is shown in the following
+                                #sections
+    for (j in 1:p1){            #the model for p1 contiuous mediators  
+      mu_M1[i,contm[j]] &lt;- inprod(alpha0.a[j,mind[contm[j],]],mcov[i,temp[mind[contm[j],]]])+inprod(alpha1.a[j,1:c1],x1[i,])
+      M2[i,contm[j]] ~ dnorm(mu_M1[i,contm[j]],prec1[j])
+      for (k in contm1[j,1]:contm1[j,2]){
+        mu_M1_c[i,k] &lt;- inprod(alpha0[k,mind[contm[j],]],mcov[i,mind[contm[j],]])+inprod(alpha1[k,1:c1],x1[i,])
+        M1[i,k] ~ dnorm(mu_M1_c[i,k],prec2[k])
+      }
+    }
+
+    for (k in 1:p2){           #the model for p2 binary mediators
+    logit(mu_M1[i,binm[k]]) &lt;- inprod(alpha0.b[k,mind[binm[k],]],mcov[i,mind[binm[k],]])+inprod(alpha1.b[k,1:c1],x1[i,])
+     M2[i,binm[k]] ~ dbern(mu_M1[i,binm[k]])
+  }
+
+    for (j in 1:p3){           #the model for p3 categorical mediators
+      mu_Mc[i,j,1] &lt;- 1 #baseline is the 1st category
+      for (k in 2:cat2[j]){
+        mu_Mc[i,j,k] &lt;- exp(inprod(alpha0.c[j,k-1,mind[catm[j],]],mcov[i,mind[catm[j],]])+inprod(alpha1.c[j,k-1,1:c1],x1[i,]))
+      }
+      sum_Mc[i,j] &lt;- sum(mu_Mc[i,j,1:cat2[j]])
+      for (l in 1:cat2[j])
+      {mu_Mc0[i,j,l] &lt;- mu_Mc[i,j,l]/sum_Mc[i,j]}
+       M2[i,catm[j]] ~ dcat(mu_Mc0[i,j,1:cat2[j]])
+      }
+  }
+
+  beta[1:P] ~ dmnorm(mu[1:P], Omega[1:P, 1:P])  #prior distributions for coefficients of model for y
+  beta0 ~ dnorm(0, 1.0E-6)
+  c[1:c2] ~ dmnorm(muc[1:c2], Omegac[1:c2,1:c2])
+  eta[1:cv1] ~ dmnorm(mucv[1:cv1], Omegacv[1:cv1,1:cv1])
+
+  for(j in 1:P)     #prior distributions for coefficients of model for not transformed mediators 
+    {alpha1[j,1:c1] ~ dmnorm(mu1.1[j,1:c1], Omega1.1[1:c1, 1:c1])
+     alpha0[j,1:nmc] ~ dmnorm(mu0.1[j,1:nmc], Omega0.1[1:nmc, 1:nmc])}
+     for (i in 1:P){
+       var2[i] ~ dgamma(1,0.1)
+       prec2[i] &lt;- 1/var2[i]
+     }
+
+  for(j in 1:p1)   #prior distributions for coefficients of model for p1 continuous mediators
+    {alpha1.a[j,1:c1] ~ dmnorm(mu1.a[j,1:c1], Omega1.a[1:c1, 1:c1])
+     alpha0.a[j,1:nmc] ~ dmnorm(mu0.a[j,1:nmc], Omega0.a[1:nmc, 1:nmc])}
+  for (i in 1:p1){
+    var1[i] ~ dgamma(1,0.1)
+    prec1[i] &lt;- 1/var1[i]
+  }
+
+  for(j in 1:p2)  #prior distributions for coefficients of model for p2 binary mediators
+    {alpha1.b[j,1:c1] ~ dmnorm(mu1.b[j,1:c1], Omega1.b[1:c1, 1:c1])
+     alpha0.b[j,1:nmc] ~ dmnorm(mu0.b[j,1:nmc], Omega0.b[1:nmc, 1:nmc])
+  }
+
+  for (i in 1:p3){  #prior distributions for coefficients of model for p3 categorical mediators
+    for(j in 1:cat1)
+      {alpha1.c[i,j,1:c1] ~ dmnorm(mu1.c[j,1:c1], Omega1.c[1:c1, 1:c1])
+       alpha0.c[i,j,1:nmc] ~ dmnorm(mu0.c[j,1:nmc], Omega0.c[1:nmc, 1:nmc])}
+  }
+
+  var4 ~ dgamma(1,0.1) #the prior for the variance of y when it is continuous
+  prec4 &lt;-1/var4
+  }</code></pre>
+<p>The rjags model can be revised when different priors or models are to
+be used. To do that, write the model file and input it to the argument
+<span class="math inline">\(filename\)</span>.</p>
+</div>
+<div id="use-transfered-continuous-predictors-for-y" class="section level3">
+<h3>use transfered continuous predictors for y</h3>
+<p>We can use transformed predictors for the outcome. The following is
+an example</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>test.c.c<span class="fl">.2</span><span class="ot">&lt;-</span> <span class="fu">bma.bx.cy</span>(<span class="at">pred=</span>weight_behavior[,<span class="dv">2</span>], <span class="at">m=</span>weight_behavior[,<span class="dv">12</span><span class="sc">:</span><span class="dv">14</span>],</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y=</span>weight_behavior[,<span class="dv">1</span>],<span class="at">fpy=</span><span class="fu">list</span>(<span class="dv">1</span>,<span class="fu">c</span>(<span class="st">&quot;x&quot;</span>,<span class="st">&quot;x^2&quot;</span>)),<span class="at">n.iter=</span><span class="dv">5</span>,<span class="at">n.burnin =</span> <span class="dv">1</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Compiling model graph</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Resolving undeclared variables</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Allocating nodes</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Graph information:</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Observed stochastic nodes: 3894</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Unobserved stochastic nodes: 21</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Total graph size: 9876</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Initializing model</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(test.c.c<span class="fl">.2</span>,<span class="at">method=</span><span class="dv">1</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  For Predictor 1 :</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Estimated Relative Effects for Method 1:</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             DE  sports exercises   sweat</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mean    1.4115 -0.1352   -0.2591 -0.0172</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sd      1.3155  0.5665    0.7322  0.0658</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.025 0.5558 -0.8765   -1.2495 -0.0748</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.25  0.7419 -0.2557   -0.3562 -0.0737</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.5   0.8710  0.0165    0.0707 -0.0189</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.75  1.5406  0.1370    0.1678  0.0376</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.975 3.1863  0.3480    0.1707  0.0433</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>We can also have multiple predictors</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>test.m.c<span class="ot">&lt;-</span> <span class="fu">bma.bx.cy</span>(<span class="at">pred=</span>weight_behavior[,<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>], <span class="at">m=</span>weight_behavior[,<span class="dv">12</span><span class="sc">:</span><span class="dv">14</span>],</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y=</span>weight_behavior[,<span class="dv">1</span>],<span class="at">n.iter=</span><span class="dv">10</span>,<span class="at">n.burnin =</span> <span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Compiling model graph</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Resolving undeclared variables</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Allocating nodes</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Graph information:</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Observed stochastic nodes: 3894</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Unobserved stochastic nodes: 21</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Total graph size: 19194</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Initializing model</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(test.m.c,<span class="at">method=</span><span class="dv">3</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  For Predictor 1 :</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Estimated Relative Effects for Method 3:</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               DE  sports exercises   sweat</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mean     -0.6613 -0.0017   -0.1010  0.1751</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sd       26.6446  0.0609    0.4603  0.3235</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.025 -46.7190 -0.1143   -0.9882 -0.3123</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.25   -6.7158 -0.0297   -0.1809  0.0993</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.5     2.3877  0.0172   -0.0711  0.1765</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.75    3.3672  0.0238    0.1337  0.3256</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.975  40.3321  0.0742    0.3778  0.7012</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>#&gt; 
+#&gt;  For Predictor 2 :
+#&gt; Estimated Relative Effects for Method 3:
+#&gt;              DE sports exercises   sweat
+#&gt; mean    -0.9434 0.1268   -0.0382  0.0300
+#&gt; sd       0.7510 0.0716    0.0362  0.0405
+#&gt; q_0.025 -2.3663 0.0405   -0.1046 -0.0452
+#&gt; q_0.25  -1.1864 0.0763   -0.0557  0.0143
+#&gt; q_0.5   -0.7875 0.1015   -0.0281  0.0414
+#&gt; q_0.75  -0.5389 0.1584   -0.0105  0.0531
+#&gt; q_0.975 -0.0951 0.2424    0.0003  0.0763</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAA0lBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYAqv8A//86AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kLY6kNtmAABmADpmAGZmOgBmOjpmZmZmkJBmkLZmkNtmtttmtv+QOgCQOjqQOmaQZgCQZjqQkDqQkGaQkLaQtpCQttuQtv+Q29uQ2/+2ZgC2Zjq2ZpC2kGa225C229u22/+2/7a2/9u2///bkDrbkGbbtmbbtpDb27bb29vb/7bb/9vb////tmb/25D/27b//7b//9v///8CQz0OAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAIPElEQVR4nO2dC3vTNhSGndIuW4G1QFIY2whsjMGIu42weoxtufr//yUkHcmWE7tf6ya+fu/zEGJZ8eWtbrFP5CAm1xLUfQBNh4IAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBDghoJeBifzTMLm96t4s5O6RRQ4VL7N5WkQPJbXgvx6oztpdifrcTDMSz80JQWtnh3dVtBC/z+S1/zsZqPbtFRQGOScyw4ZQVEwmMb2NZ/cjRYJqopbCfrnmTrXs6k+FcXRXzrVnpUqGRN1NpdBMHicqIy8MzYfGTw0r9NMxk8q8d4Lt9Gr+G+1PHg0s5/bEpSslHTl+73a1LGRvjHv1AHtxYzlNoIWUhrU+XmCxIxKURnUSWiOnZVCQX7GULY6coJssXOfzApKVzpByTHpFNlFXYLUAXw1j5enugkJk2NUL0Nz+JI6sxmsIMckzlQxL6MS/GS+GuvtmY1qEfP4U9JQZQR5KxNBxzP9KlsazjdKc20lSPH5D1UGhr4gKSbmvMWSV26KBPkZpYpGjz7YjSptxx+8PWcEeSsTQWrTKtkdk85Xm6DNaznbrCB1dJPkXVrg47hYkJfR74zcRhX3fnCJGUHeyqQNmqbrTMb62iB9dMe/fh5vCdJ1LKkt24K8bskT5GWUGipIEVg9k1W/JaleG5Su3BHkurn6BImF9bYgreEXc5y6LGU+VSTIy7hTghSrNw9lZOCnSjVKVzawBC1cfR9lBZkKo9/sDFWKBPkZ5fwXZ+8y46DNz35DpstpmI4vzcodQfW3QUrEyXz1MpDuVg9mkr+ZdPXqzeBFrHok98dP2yDXjie9WJJRaX9sau8kqX5P5roquY34FddbuSuo9l5MWkhppPVRyzhITkH+3HZ4k4yVCwX5GcPsRq8us+1YksF8g0tX7gqqfRxkerHjd6bemEHrh51vAavXqrolg+BiQZmMZiT9Y2xHwjOzHJzN0p2bBD3Wdu/PZjm9mHz+fFZPG9QiVK+3z811SFBoaqHr7fZFhwS51rz4ckEZOiQoXn136l8H2A9dEnQQKAhAQYBWC6ri4CmoAfs4GBQEoCAABQEoCEBBAAq6HvXFtIKdHH4XB4OCAP0R9G+5j/VF0OZlQbwQgoIAnREUyT3mSbw8ncSR3D9K7jjq+/olryJ3RdDi6Er/i4bx4ttRHI5MiVGe1uNJHIf6HmnPS9BC7iouTubR86EqSGZZFyi7sveC5L5yvH56dfn2/L+nLoRMAiECCtKEuhF69f6nj0//PJ9H9q67CaNiCRK0hOj78/9fvRm5KqfrHKuYRgtZ3tehGaP48uFEydJBHYOpST/V/VvPBbnwGN1rRdJABzYIJjj6qBN73s0fDAoCUBCCF8wAFASgIAAFASgIQEEACgJQUAOgIAAFASgIQEGANguq4ss8BcGdVLCPQ0FBAAoCUBCAggAUBKCg66nkpgYFwb1UsI8DQUGALgpaX+zxF8ldFLRXWijIRmeaOM2hW9q8ehMMpmZmFFOConTGMZlcp+wP3dsnyIvOXJ7P3ZIJB1JJelkJsiGdbq1dLHXorROURGcuhuEkWTIqrAMryMtbUo6mfYKS6ExdwZIlE89q4xKVIBvSma4Ntqatuvmht0+QmxNpPdbT4dilLUGxhHQmeWWxzO7aJyipLtEoSmM1jaC0iknSyK9aJYMU2yfIRWcuH1yZuiRLRpCJTxy6Nmh5f5qJ5LzfkxLkojNDPePa0C1JTL3q5vU0mxdTF9LpRXKWbIRaKKhaKAhAQQgKAlAQgIIAFASgIAAFASgIQEFNgIIAFASgIAAFAVotqIrv8+0W9DUFXQsFASgIQEEACgJQEICCAEEFAyEKQvs49A4OSfcFlZyC09F1QaWnnnJQEKATgiRIc33x1oR3+JGd8ti18kGc3RBkgzQl5kzHburQGBvZqUvQHYI4uyMolgAq/bJ8YJ7TKJGdTlBpuiDITcN5MZXIuxPzDFmJ7NSC7hDE2Q1BsQRpFgqKywdxdkaQFrFbxVJB5XuzLgiyQZqmkQ7lJwry/yRtg0oGcXZDkA3SXI+fy08zXDdvIjv1FJzlgzg7IkgwVWzvUBCAggC8YAagIAAFASgIQEEACgJQEIDhLw2AggAUBKAgAAUBWiYoyFLFHivYxx4JvvGhoB0oCEBBAAoCUBCAggAUlJJ7ZBlBPR8HURCAggA9FqTvz0vgnX5UbxAEuUFUvRakb7MuTExD8Q3X3gtKHhheAAWZsCEKysEKUnZsG5T7oN7gBlRwsHULYgnKgVUMwEYawG4esDNQzI3i7LGgm0FBAAoqAy+YASgIQEEACgJQEICCABQE6MfljlZBQQAKAlAQgIIADRfUz4v2tyDI/l+wWMURNBQKAlAQgIIAFASgIAAFASgIQEGNh4IAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBgKYK0iHm7oeIOvD8js9PKE9DBa3HykgkhvQc1Ga5FhoqyDwLwMzzHst83Gau9zpoqCCDnancuDFzvddBgwWZ6d1j87OpuPy07neluYKcHwraIpIfsS5PXbPMKpbHIn3WhnHDRjqLX6PYzecQuV8ihiMOFJsNBQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFAb4AhmXgclb/TPMAAAAASUVORK5CYII=" /><!-- --></p>
+<pre><code>#&gt; 
+#&gt;  For Predictor 3 :
+#&gt; Estimated Relative Effects for Method 3:
+#&gt;              DE  sports exercises   sweat
+#&gt; mean     0.2679 -0.0387    0.0014 -0.0103
+#&gt; sd       1.1085  0.1655    0.0094  0.0193
+#&gt; q_0.025 -1.6786 -0.1743   -0.0138 -0.0435
+#&gt; q_0.25   0.0478 -0.1583   -0.0007 -0.0202
+#&gt; q_0.5    0.4072 -0.0730    0.0029 -0.0091
+#&gt; q_0.75   0.9715 -0.0589    0.0061  0.0050
+#&gt; q_0.975  1.7554  0.2714    0.0143  0.0119</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>#&gt; 
+#&gt;  For Predictor 4 :
+#&gt; Estimated Relative Effects for Method 3:
+#&gt;             DE  sports exercises   sweat
+#&gt; mean    0.1487 -0.0042    -7e-04 -0.0399
+#&gt; sd      0.1329  0.0019     7e-04  0.0289
+#&gt; q_0.025 0.0142 -0.0067    -2e-03 -0.0701
+#&gt; q_0.25  0.0771 -0.0055    -9e-04 -0.0548
+#&gt; q_0.5   0.1346 -0.0041    -7e-04 -0.0430
+#&gt; q_0.75  0.1584 -0.0034    -2e-04 -0.0374
+#&gt; q_0.975 0.4126 -0.0012     0e+00  0.0172</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>#&gt; 
+#&gt;  For Predictor 5 :
+#&gt; Estimated Relative Effects for Method 3:
+#&gt;                 DE    sports exercises   sweat
+#&gt; mean     -241.9611  -40.7378    1.4841  4.7982
+#&gt; sd        712.7054  119.2273    3.5949 14.9380
+#&gt; q_0.025 -1718.6179 -288.0206   -0.0742 -0.9395
+#&gt; q_0.25     -8.7775   -1.5061   -0.0009 -0.1116
+#&gt; q_0.5      -0.3918   -0.1493    0.0479 -0.0206
+#&gt; q_0.75     -0.0334   -0.0153    0.4626  0.0082
+#&gt; q_0.975     0.6392    0.2791    9.0949 35.7088</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAA0lBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYA//86AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kLY6kNtmAABmADpmAGZmOgBmOjpmZmZmkJBmkLZmkNtmtttmtv+QOgCQOjqQOmaQZgCQZjqQkDqQkGaQkLaQtpCQttuQtv+Q29uQ2/+2ZgC2Zjq2ZpC2kGa225C229u22/+2/7a2/9u2///bkDrbkGbbkJDbtmbbtpDb27bb29vb/7bb/9vb////tmb/25D/27b//7b//9v///85FUBbAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAIRUlEQVR4nO2dC3vaNhSGRUrGkmZJW0iz7kKzdV27QraVDm9dt3H1//9Lk3QkWQbcL+FmbL73eYqxJGz5jS4uPtgqJZ9FlV2BQ4eCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQ4J6CXqrTUS5h/uswnS+lLpAojy43vztT6qm8FpQ3G11KczuZdVRrVfquWVPQ9ObkoYLGZtmW19XF7UYXqaigvlpxLEvkBCWq0Uvd62pWbrRI0L54kKC/b/SxXvbMoWhO/jCp7qh0y+jqo7lTqvE0qEyiI7YfaVzY116u4Eed+Oh7v9Fh+qdebzwZuM8tCAqZkq59v9Obalrpc/tOV2grZhwPETSW1qCPLxIkZnSKLqAPwtD0VgoFxQX7stW2F+Sanf9kXlCW6QWFOpkU2UVZgnQFvhilkzMzhPRDHfVLy1ZfUgeugBPk6aa5LhYV1IKfjaYdsz27USNilH4MA1VOUJQZBDUH5lW21BrNtebSWpDm02+6DbRiQdJM7HGLpajdFAmKC0oXTZ68dxvV2prvoz3nBEWZQZDetE72dTLlShM0fyVHmxeka9cN77IGn6bFgqKC8WTkN6p59K1PzAmKMsMY1MvybMHyxiBTu+bPnzoLgkwfC71lUVA0LUWCooLSQwVpAtMbyfolpEZjUJa5JMhPc+UJEguzRUFGw0+2nqYt5T5VJCgquNSCNNPXF3JmEKdKN8oyD7AFjX1/b+cF2Q5j3iydqhQJigvK8Y8v3+bOg+Y/xgOZaaf97PzSZi4JKn8M0iJOR9OXSqZbczIT/mYy1es3je9TPSP5P342BvlxPMxioaDW/tT23m7ofs9Gpiv5jcQdN8pcFlT6LCYjpAzS43AeJIcgf253ehPOlQsFxQX7+Y0O7/LjWChg/weXZS4LKv08yM5izbe239iT1vdL/wuYvtLdLZwEFwvKFbRn0t+l7kx4YNfV5SDbuU0w59r+/eVgxSwmn78alDMGVQg9621zczUS1Le90M9226JGgvxoXvx1wTrUSFA6/fos/h5gO9RJ0E6gIAAFAaouaOf1p6Cyd7BjKAhAQQAKAlAQgIIAFASgIAAFAY5D0D/rf/QYBM1fFsQL3QcKAtRCUCLXmLvp5KybJnL9KFxxNNf1N/gWuQ6CxidD8y9ppeOv2mm/bVuM9jTrdNO0b66RHnkLGstVxfHpKHnR0g3JrpsG5TKPXpBcV05nz4d3b67+fe5DyCQQQlGQoW8Godt3P3x4/vvVKHFX3W0YFVuQYCQk31z9d/u67buc6XPsYgYjZHJuQjPa6d1FV8syQR2Nnk0/M/PbkQvy4TFm1kpkgFYuCEadfDCJRz7N7xQKAlAQgIIAFASgIAAFASgIQEEACgJQUNlQEICCABQEoCBA1QVxFgNQEICCABQEoCAABQEoCEBBAAoCUBCAggA1EzS73uovktPaCdo+1RLkojNtnGbLr81vX6tGz94ZxbagJLvjmNxcZ6MfuldKUBSdObka+TUbDqSTzLoW5EI6fa5bPYj673wHITpz3Op3w5pV4Rw4QVHZTeQYKiUoRGeaDhbWbDyri0vUglxIZ5arFm5b9TCqJcjfE2nWMbfDcWsLglIJ6QxlZXXtfVZKUOguSTvJYjWtoKyLSVI77lqbBClWSpCPzpw8Htq+JGtWkI1PbPkxaHLey0Vynh9JC/LRmX1zx7WWX5OYej3Nm9tsXvd8SGcUybnJIFQtQSVAQQAKAlAQgIIAFASgIAAFASgIQEEACiobCgJQEICCABQEqLggxVns81AQgIIAFASgIAAFASgIQEGFSMUpqBAKAhyHoI1vwVlvQVu49RQFFVIbQRKkObt+Y8M74shOeezaukGcdRHkgjQl5szEbprQGBfZaVrQ2kGc/tFu26/ywn52vH0fWtaRKKrJY/ucRons9ILWoi4tyN+G87onkXen9hmyEtlpBK0dxFkXQakEaRYKStcN4qyRICNiuYtlgtabzeoiyAVp2kG6Lz9RkGU3G4PWCuKsiyAXpDnrvJCfZvhp3kZ2mltwrhvEWRtBgu1iW4WCABR0L2ojaFdQEICCABQEoCAABQEoCEBBpUNBAAoCUBCAggDVFVSTqxq7Q31poKBCKAhAQQAKAlAQgIIARy8I1YyCUD4FgXwKAvn1FWSuz0vgnXlUr1JqZRDVUQsyl1nHNqah+ILr0QsKDwwvgIJs2BAFrcAJ0nbcGLTyQb3qfuy6smULYgtaAbsYgIM0gNM8YOlEcWUU5xELuh8UBKCgDaEgAAUBKAhAQQAKAlAQgIIANf66o1JQEICCABQEoCDAgQs6zi/tH4B6wNud1+AQoSAABQEoCEBBAAoCUBCAggAUdPBQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhwiIIkEn9yptyNg5Vqp2lY7pkDFKRN2J8qtNxaK5112mG5bw5PUKKaN0ZQX36fYO/GPT4d+eW+q3N4gv4ayu3Kby9sD7NOJo+Hfrnv6hyeIDcG2e40uRolVsx5zy/3XZmDFWSZdboUlJG4n69mgvQ7drFlrCD7yJbZdc86MYO0W+67MgcrSCzJgyY4zeeRLmZ+jegfNMETxcOFggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCAP8D0s0p6+EiJAgAAAAASUVORK5CYII=" /><!-- --></p>
+<pre><code>#&gt; 
+#&gt;  For Predictor 6 :
+#&gt; Estimated Relative Effects for Method 3:
+#&gt;              DE  sports exercises   sweat
+#&gt; mean    -0.2879 -0.0625    0.0291 -0.0535
+#&gt; sd       2.7421  0.3512    0.1473  0.1783
+#&gt; q_0.025 -6.0626 -0.7946   -0.0819 -0.4258
+#&gt; q_0.25  -0.0200 -0.0488   -0.0590 -0.0366
+#&gt; q_0.5    0.7389  0.1014   -0.0044  0.0210
+#&gt; q_0.75   1.0562  0.1265    0.0063  0.0462
+#&gt; q_0.975  1.4355  0.1674    0.3351  0.0653</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>#&gt; 
+#&gt;  For Predictor 7 :
+#&gt; Estimated Relative Effects for Method 3:
+#&gt;             DE sports exercises   sweat
+#&gt; mean    0.8561 0.0880   -0.0528  0.1087
+#&gt; sd      0.2282 0.0866    0.0378  0.1618
+#&gt; q_0.025 0.3791 0.0205   -0.0957 -0.0212
+#&gt; q_0.25  0.8664 0.0436   -0.0863  0.0204
+#&gt; q_0.5   0.9287 0.0552   -0.0518  0.0678
+#&gt; q_0.75  0.9657 0.0998   -0.0285  0.1204
+#&gt; q_0.975 0.9918 0.2655    0.0019  0.4418</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAA1VBMVEUAAAAAADoAAGYAAP8AOjoAOmYAOpAAZpAAZrYAqv8A//86AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kLY6kNtmAABmADpmAGZmOgBmOjpmZmZmkJBmkLZmkNtmtttmtv+QOgCQOjqQOmaQZgCQZjqQkDqQkGaQkLaQtpCQttuQtv+Q29uQ2/+2ZgC2Zjq2ZpC2kGa225C229u22/+2/7a2/9u2///bkDrbkGbbtmbbtpDb27bb29vb/7bb/9vb////tmb/25D/27b//7b//9v///9PMSVYAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAIR0lEQVR4nO2dC3vTNhSGnUJZWIG1QFIY2whsjMFIuo2weuyWq/7/T5qOLrYcW/la1iAn/t7naWLLii2/1cW1T5VMka1kqQvQdigIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBrijoRXZnVklY/3Kp1rXUDfLMo/OtL06y7JF9jeSXndbS3EFWw6zflL5rPlHQ8unRdQXN5X1gX5uzm51usqeCJlnDudSoCMqz3li512YadxoT9Lm4lqA/n+pzPR3LqWiOfpdUd1a6Zoz02VxkWe9RoTIPzth8pPfAvI4rGT/qxNvP/U4v1R96vfdw6j63IajYaNO173d6V8dG+tos6QLdiBnHdQTNbW3Q5xcIsmZ0is6gT0I49laigsKME7vXgRfkqp3/ZFVQudELKsokKfYQqQTpAnwxU4sT6UImRRn1S98U36ZOXQYnyDNSlSYWZNSCH8+WQ9mf2amImKmPRUdVERRsLAQdT+XV7qk/W2vNyWqQ5q9fdR3oh4JsNTHnbS0F9SYmKMxom2j+8L3bqdZ2/D44ckVQsLEQpHetk32ZJF8yQetX9myrgnTpRsVSWeGVigsKMoaDkd+p5va3PrEiKNhY9EHjcpvJmK4PktId//TXcEOQtLGitWwKCoalQFCQ0bZQi60Cy6d2089FatAHlRtrgvwwl06QtbDaFCQafjTllLpU+VRMUJCxVoM0y9cP7JVBmGqbUbmxhTVo7tv7oCrINBhZqF2qxASFGe35z0/fVq6D1j+EHZnU00l5fWk21gSl74O0iDuz5YvMDrdyMVP8zuxQrxd6z5Uekfwvv+yDfD9ejGJFRq39kWm9o6L5PZ5JU/I7CRtusLEuKPkoZntI20nPi+sgewr21+0ub4pr5aigMOOkutPLi2o/VmQwf8GVG+uCkl8HmVHs+K1pN+ai9X3tr4DlK93ciovguKBKRnMl/Z1yV8JTs56dTsuDmwS51vbLp9OGUcx+/myapg/aI/Sod5O7OyBBE9MK/Wh3UxyQIN+bx28XfAoHJEgtvz4J7wPcDIckaCdQEICCAK0WZPrc1GVIfPytZLdu3UpdwNTH3woFASgIQEEACgJQEICCAJuCUhSWglAZEhzzylCQ4+9IOgUZ1i8i8UIUZKGg3D5jHqnFyUjl9vlR8cRRnuvH7iJ3RND86FJ+8r6afzVQk4GpMdrTajhSaiLPSKM1aJPdF7Zeht0fYm6fKs7vzPJnfV2RzLpUKLex803MPldWqyeXF2/O/nniQ8hsIERGQcJEOqGX777/8OS3s1nunrqbMCrWIItIyL85+/fl64FvctLm2MQEEbK4J6EZA3XxYKRlSVBHb2zST2R867ggHx4jo1ZuO+jMBcFkRx8ksePD/KdDQQAKAvCGGYCCABQEoCAABQEoCEBBAIa/7AEUBKAgAAUBKAjQZkHJRzChDWWIQUEACgJQEICCABQEoCAABW0lU+n/lFcUdIVitBUKAnRS0Or86v+R3ElB1+EQBbnoTBOn2fdr65evs97YzIxialBezjhmJ9eJ/KP7AQoKojMXZzO/ZsKBdJKsa0EupNNvdatNJWvBHXt1s4KK6Mx5fzIq1owK58AJCvI2y7ElOzhBRXSmNLBizcSzurhELciFdJZbs41pq8qSHZ4gPyfSaijT4bi1DUHKhnQWee1qY8kOTlDRXPJBXsZqGkFlE7NJg7BpNQcpHqAgH525uH9p2pJdM4JMfGLf90GLe+NKJOe9jtQgH505kRnX+n7NxtTrYV6m2Twf+5DOIJKzuRM6REE3CgUBKAjSBj8UhGhDGWJQEICCABQEoCAABQEoaB+gIAAFASgIQEGAVgtqw4ON1MffSnb37t3UBUx9/K1QEICCABQEoCAABQEoCJBlXlC6YlIQKkOyI18BCopNwenouqD41FMOCqIgH6S5On9jwjvCyE77tWvRIE7VDUEuSNPGnEnspoTGuMhOqUHxIE6lwpk4d1zMOJ9DkLIBVPKyuG++p9FGdnpB8cJ1oAb5aTjPxzbyTkIT9buJqhJB8SBO1Q1BygZpRgWpaBCn6owgEVFvYqWg+GjWBUEuSNN00hP7Lwr2fVT2Qc1BnKobglyQ5mr4zP5rhh/mTWSnTMEZDeJUHRFkMU3s2lAQgIIAvGEGoCAABQEoCEBBAAoCUBCA4S97AAUBKAhAQQAKArRaUO37xRJ83Vi7BX25FQqiIAAFASgIQEEACgJQEKAqqKZLyr7z8lMQKsOuD/B/oCBAVwXJ83kbeCdf1ZtlWTTCrLOC5DHr3MQ0bH3g2m1BxReGx+m4IBM2REENOEHajuuDIl/UuykoyT2h1IJYgxpgEwOwkwZwmAfULhRjUZxdFXRlKAhAQQDeMANQEICCABQEoCAABQEoCMDwlz2AggAUBKAgAAUBWi0o/RjWdkHV98a3z1WGVkJBAAoCUBCAggAUBKAgAAUBKGgPoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQoI2CJNB80LCchBYKkjmnV8NBbTkNLRRk5t82c7tXl9PQQkHGh5nbvbqchhYKyo0UO417uJwGCgK0UBCbGMD48J10sJyGFgriMI/wF4eTAS8U2w8FASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUB/gMY6m2ToSIRbAAAAABJRU5ErkJggg==" /><!-- --></p>
+</div>
+<div id="binary-outcome" class="section level3">
+<h3>Binary outcome</h3>
+<p>The following is an example for binary outcome overweight (yes or
+no)</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>test.m.b<span class="ot">&lt;-</span> <span class="fu">bma.bx.cy</span>(<span class="at">pred=</span>weight_behavior[,<span class="dv">3</span>], <span class="at">m=</span>weight_behavior[,<span class="dv">12</span><span class="sc">:</span><span class="dv">14</span>],</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y=</span>weight_behavior[,<span class="dv">15</span>],<span class="at">cova=</span>weight_behavior[,<span class="dv">5</span>],<span class="at">n.iter=</span><span class="dv">500</span>,<span class="at">n.burnin =</span> <span class="dv">100</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Compiling model graph</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Resolving undeclared variables</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Allocating nodes</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Graph information:</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Observed stochastic nodes: 3930</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Unobserved stochastic nodes: 22</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Total graph size: 8973</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Initializing model</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(test.m.b,<span class="at">method=</span><span class="dv">2</span>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  For Predictor 1 :</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Estimated Relative Effects for Method 2:</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              DE sports exercises   sweat</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mean     0.6966 0.2753   -0.0225  0.0506</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sd       0.9125 0.8780    0.0900  0.1412</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.025 -0.6383 0.0398   -0.1533 -0.0342</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.25   0.6858 0.1293   -0.0359  0.0022</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.5    0.8002 0.1897   -0.0118  0.0247</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.75   0.8644 0.2878    0.0008  0.0545</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.975  0.9624 1.1567    0.0383  0.3336</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- -->
+For such case, the model for y in the jags is set as following by
+default, which can be revised.</p>
+<pre><code>    logit(mu_y[i]) &lt;- beta0 + inprod(c, x[i,]) + inprod(beta,M1[i,]) + inprod(eta,cova[i,])
+    y[i] ~ dbern(mu_y[i])</code></pre>
+</div>
+<div id="time-to-event-outcome" class="section level3">
+<h3>Time-to-Event outcome</h3>
+<p>The following is an example for survival model</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>test.m.t<span class="fl">.1</span><span class="ot">&lt;-</span> <span class="fu">bma.bx.cy</span>(<span class="at">pred=</span>example2[,<span class="st">&quot;x&quot;</span>], <span class="at">m=</span>example2[,<span class="st">&quot;M&quot;</span>],  <span class="at">y=</span><span class="fu">Surv</span>(example2[,<span class="st">&quot;time&quot;</span>],example2[,<span class="st">&quot;status&quot;</span>]), <span class="at">inits=</span><span class="cf">function</span>(){  <span class="fu">list</span>(<span class="at">r=</span><span class="dv">1</span>,<span class="at">lambda=</span><span class="fl">0.01</span>)},<span class="at">n.iter=</span><span class="dv">10</span>,<span class="at">n.burnin =</span> <span class="dv">1</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Compiling model graph</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Resolving undeclared variables</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Allocating nodes</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Graph information:</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Observed stochastic nodes: 300</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Unobserved stochastic nodes: 12</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Total graph size: 2861</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Initializing model</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>temp1<span class="ot">=</span><span class="fu">summary</span>(test.m.t<span class="fl">.1</span>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(temp1,<span class="at">method=</span><span class="dv">1</span>,<span class="at">RE=</span><span class="cn">FALSE</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  For Predictor 1 :</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Estimated Effects for Method 1:</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              TE     DE      m1</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mean     0.5985 0.0795  0.5190</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sd       0.5424 0.0321  0.5234</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.025 -0.5014 0.0462 -0.5476</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.25   0.5278 0.0462  0.4815</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.5    0.7611 0.1025  0.6587</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.75   0.8470 0.1025  0.8008</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.975  1.0878 0.1171  0.9707</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- -->
+For such case, the model for y in the jags is set as following by
+default, which can be revised.</p>
+<pre><code>elinpred[i] &lt;- exp(inprod(c, x[i,]) + inprod(beta,M1[i,]))
+    base[i] &lt;- lambda*r*pow(y[i,1], r-1)
+  loghaz[i] &lt;- log(base[i]*elinpred[i])
+     phi[i] &lt;- 100000-y[i,2]*loghaz[i]-log(exp(-lambda*pow(y[i,1],r)*elinpred[i])-exp(-lambda*pow(tmax,r)*elinpred[i])) +log(1-exp(-lambda*pow(tmax,r)*elinpred[i]))
+    zero[i]  ~ dpois(phi[i])</code></pre>
+<p>The following is an example of setting the priors for r and
+lambda:</p>
+<pre><code>r ~ dunif(0,10) #  dunif(1,1.2)
+lambda ~ dgamma(1,0.01)</code></pre>
+</div>
+<div id="categorical-outcome" class="section level3">
+<h3>Categorical outcome</h3>
+<p>Finally, the following is an example for categorical outcomes</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>test.m.c<span class="ot">&lt;-</span> <span class="fu">bma.bx.cy</span>(<span class="at">pred=</span>weight_behavior[,<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>], <span class="at">m=</span>weight_behavior[,<span class="dv">12</span><span class="sc">:</span><span class="dv">13</span>],</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">y=</span><span class="fu">as.factor</span>(weight_behavior[,<span class="dv">14</span>]),<span class="at">cova=</span>weight_behavior[,<span class="dv">5</span>],<span class="at">n.iter=</span><span class="dv">5</span>,<span class="at">n.burnin =</span> <span class="dv">1</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Compiling model graph</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Resolving undeclared variables</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Allocating nodes</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Graph information:</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Observed stochastic nodes: 2592</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Unobserved stochastic nodes: 20</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Total graph size: 23800</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Initializing model</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(test.m.c,<span class="at">method=</span><span class="dv">3</span>)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  For Predictor 1 outcome 1 :</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Estimated Relative Effects for Method 3:</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          DE sports exercises</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mean    NaN    NaN       NaN</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sd       NA     NA        NA</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.025  NA     NA        NA</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.25   NA     NA        NA</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.5    NA     NA        NA</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.75   NA     NA        NA</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; q_0.975  NA     NA        NA</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in plot.window(xlim, ylim, log = log, ...): need finite &#39;xlim&#39; values</span></span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAA1BMVEX///+nxBvIAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAaElEQVR4nO3BMQEAAADCoPVPbQ0PoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4NcARS8AAcJedcoAAAAASUVORK5CYII=" /><!-- -->
+For such case, the model for y in the jags is set as following by
+default, which can be revised.</p>
+<pre><code>mu_y1[i,1] &lt;- 1
+for (k in 2:caty)  #caty is the number of categories of y
+{mu_y1[i,k] &lt;- exp(beta0[k-1] + inprod(c[k-1,], x[i,]) + inprod(beta[k-1,],M1[i,]) + inprod(eta[k-1,],cova[i,]))}
+sum_y[i] &lt;- sum(mu_y1[i,1:caty])
+for (l in 1:caty)
+{mu_y[i,l] &lt;- mu_y1[i,l]/sum_y[i]}
+y[i] ~ dcat(mu_y[i,])</code></pre>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Yu2022_2" class="csl-entry">
+Yu, Qingzhao, Wentao Cao, Donald Mercante, Xiaocheng Wu, and Bin Li.
+2022. <span>“Bayesian Mediation Analysis Methods to Explore
+Racial/Ethnic Disparities in Anxiety Among Cancer Survivors.”</span>
+<em>Behaviormetrika</em> accepted.
+</div>
+<div id="ref-Yu2017a" class="csl-entry">
+Yu, Qingzhao, and Bin Li. 2017. <span>“Mma: An r Package for Mediation
+Analysis with Multiple Mediators.”</span> <em>Journal of Open Research
+Software</em> 5 (1): 11. <a href="https://doi.org/10.5334/jors.160">https://doi.org/10.5334/jors.160</a>.
+</div>
+<div id="ref-Yu2022" class="csl-entry">
+———. 2022. <em>Statistical Methods for Mediation, Confounding and
+Moderation Analysis Using r and SAS</em>. Chapman &amp; Hall/CRC. <a href="https://www.routledge.com/Statistical-Methods-for-Mediation-Confounding-and-Moderation-Analysis/Yu-Li/p/book/9780367365479">https://www.routledge.com/Statistical-Methods-for-Mediation-Confounding-and-Moderation-Analysis/Yu-Li/p/book/9780367365479</a>.
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
